@@ -1020,7 +1020,7 @@ return saveResult;`,
           const customConsole = {
             log: (...args: any) => {
               const placeholderLog: logType = {
-                nodeId: nodeId ?? "",
+                nodeId: node.data.label ?? "",
                 message: args
                   .map((a: any) =>
                     typeof a === "object" ? JSON.stringify(a) : String(a),
@@ -1251,7 +1251,7 @@ return saveResult;`,
 
               // Re-queue this node to continue loop
               setTimeout(() => {
-                if (!queue.includes(nodeId) && nodeId) {
+                if (nodeId && !queue.includes(nodeId)) {
                   queue.unshift(nodeId);
                 }
               }, 500);
@@ -1415,6 +1415,7 @@ return saveResult;`,
       nodes,
       edges,
       setNodes,
+      setEdges,
       addLog,
       variables,
       getVariable,
