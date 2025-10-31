@@ -1303,7 +1303,7 @@ try {
 
 ## License
 
-MIT License - Free to use and modify
+Creative Commons Attribution-NonCommercial 4.0 International
 
 ---
 
