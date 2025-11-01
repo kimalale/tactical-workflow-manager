@@ -56,7 +56,10 @@ const DatabasePanel = ({
         type: type === "postgresql" ? "postgresql" : "mysql",
         host: host,
         port: parseInt(port, 10) || (type === "postgresql" ? 5432 : 16500),
-        connectionString: connStr,
+        connectionString:
+          !connStr.trim() && type === "postgresql"
+            ? `postgresql://${user}:${password}@${host}:${port}/${database}`
+            : connStr,
         database: database,
         user: user,
         status: "idle",
@@ -94,7 +97,13 @@ const DatabasePanel = ({
             type="text"
             placeholder="Connection name..."
             value={name}
-            onChange={(e) => setName(e.target.value)}
+            onChange={(e) => {
+              setName(e.target.value);
+              if (type === "postgresql")
+                setConnStr(
+                  `postgresql://${user}:${password}@${host}:${port}/${database}`,
+                );
+            }}
             className="w-full bg-black border border-green-900/50 text-green-400 font-mono text-xs px-2 py-1 focus:border-green-500 focus:outline-none"
           />
 
@@ -143,35 +152,70 @@ const DatabasePanel = ({
                 type="text"
                 placeholder="Host (e.g., localhost)"
                 value={host}
-                onChange={(e) => setHost(e.target.value)}
+                onChange={(e) => {
+                  setHost(e.target.value);
+                  if (type === "postgresql") {
+                    setConnStr(
+                      `postgresql://${user}:${password}@${e.target.value}:${port}/${database}`,
+                    );
+                  }
+                }}
                 className="w-full bg-black border border-green-900/50 text-green-400 font-mono text-xs px-2 py-1 focus:border-green-500 focus:outline-none"
               />
               <input
                 type="text"
                 placeholder={`Port (default: ${type === "postgresql" ? "5432" : "3306"})`}
                 value={port}
-                onChange={(e) => setPort(e.target.value)}
+                onChange={(e) => {
+                  setPort(e.target.value);
+                  if (type === "postgresql") {
+                    setConnStr(
+                      `postgresql://${user}:${password}@${host}:${e.target.value}/${database}`,
+                    );
+                  }
+                }}
                 className="w-full bg-black border border-green-900/50 text-green-400 font-mono text-xs px-2 py-1 focus:border-green-500 focus:outline-none"
               />
               <input
                 type="text"
                 placeholder="Database name"
                 value={database}
-                onChange={(e) => setDatabase(e.target.value)}
+                onChange={(e) => {
+                  setDatabase(e.target.value);
+                  if (type === "postgresql") {
+                    setConnStr(
+                      `postgresql://${user}:${password}@${host}:${port}/${e.target.value}`,
+                    );
+                  }
+                }}
                 className="w-full bg-black border border-green-900/50 text-green-400 font-mono text-xs px-2 py-1 focus:border-green-500 focus:outline-none"
               />
               <input
                 type="text"
                 placeholder="Username"
                 value={user}
-                onChange={(e) => setUser(e.target.value)}
+                onChange={(e) => {
+                  setUser(e.target.value);
+                  if (type === "postgresql") {
+                    setConnStr(
+                      `postgresql://${e.target.value}:${password}@${host}:${port}/${database}`,
+                    );
+                  }
+                }}
                 className="w-full bg-black border border-green-900/50 text-green-400 font-mono text-xs px-2 py-1 focus:border-green-500 focus:outline-none"
               />
               <input
                 type="password"
                 placeholder="Password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  if (type === "postgresql") {
+                    setConnStr(
+                      `postgresql://${user}:${e.target.value}@${host}:${port}/${database}`,
+                    );
+                  }
+                }}
                 className="w-full bg-black border border-green-900/50 text-green-400 font-mono text-xs px-2 py-1 focus:border-green-500 focus:outline-none"
               />
             </>
