@@ -27,6 +27,7 @@ export type NODETYPE =
   | "LOOP"
   | "WEBHOOK"
   | "STORAGE"
+  | "TABLE"
   | "DATABASE";
 export type Variables = Record<string, string>;
 export type SchedulerType = {
