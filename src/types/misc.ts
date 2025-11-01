@@ -17,7 +17,8 @@ export type Template =
   | "loop"
   | "webhook"
   | "storage"
-  | "database";
+  | "database"
+  | "table";
 
 export type NODETYPE =
   | "BASIC"
