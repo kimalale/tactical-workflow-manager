@@ -177,8 +177,15 @@ const FunctionNode = ({
             </span>
           </div>
           {/*{data.lastResult && (*/}
-          <div className="truncate text-green-500">
-            OUTPUT: {JSON.stringify(data.lastResult ?? "None").substring(0, 30)}
+          <div
+            className={`truncate uppercase ${data.status === "COMPLETE" ? "text-green-500" : data.status === "ERROR" ? "text-red-500" : "text-blue-500"}`}
+          >
+            OUTPUT:{" "}
+            {data.status === "COMPLETE"
+              ? "Success"
+              : data.status === "ERROR"
+                ? "Failed"
+                : "Standby"}
           </div>
           {/*)}*/}
           {data.nodeType === "LOOP" && data.loopCount && (
