@@ -26,6 +26,7 @@ import {
   Save,
   Spline,
   Square,
+  Table,
   Terminal,
   Upload,
   Webhook,
@@ -33,6 +34,7 @@ import {
 } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import FunctionNode from "../components/FunctionNode";
+import TableNode from "../components/TableNode";
 import {
   type ExecutionHistoryType,
   type SchedulerType,
@@ -65,6 +67,7 @@ import GroupOverlays from "../components/GroupOverlays";
 import CustomEdge from "../components/CustomEdge";
 const nodeTypes = {
   functionNode: FunctionNode,
+  tableNode: TableNode,
 };
 
 const edgeTypes = {
@@ -602,16 +605,51 @@ return { stored: true };
           code: `
 // Database operations
 
-console.log("Saving to database...");
+console.log("Interacting with database...");
 
-const saveResult = await db.save('records', {
-    timestamp: new Date().toISOString(),
-    data: data
-});
+const ConnectionName = "AB";
+const TableName = "users";
+const SQL = \`SELECT * from \${TableName}\`;
+const findResult = await db.findSQL(ConnectionName, SQL);
 
-console.log("Saved:", saveResult);
-return saveResult;`,
+const result = {
+    tableName: TableName,
+    data: findResult
+}
+
+return result;
+`,
           nodeType: "DATABASE",
+        },
+        table: {
+          label: `TABLE`,
+          code: `
+// Input: data from previous node
+// Output: return data in desired manner
+// Output structure:
+//    {
+//      tableName: "name",
+//      tableColumns: ["colA", ..., "colX"],
+//      data: {
+//              "key(colA)": <value>,
+//              ...,
+//              "key(ColX)": <value>
+//              }[]
+//          }
+//    }
+
+// Sample Demo:
+console.log("Received data: ", data)
+
+const dataPresentation = {
+    tableName: data && data.tableName ? data.tableName : "Invalid Table Name",
+    tableColumns: Object.keys(data.data[0]),
+    data: data.data
+}
+
+return dataPresentation || null;
+          `,
+          nodeType: `TABLE`,
         },
       };
 
@@ -619,7 +657,7 @@ return saveResult;`,
 
       const newNode = {
         id,
-        type: "functionNode",
+        type: template === "table" ? "tableNode" : "functionNode",
         position: {
           x: Math.random() * 300 + 100,
           y: Math.random() * 300 + 100,
@@ -1323,7 +1361,7 @@ return saveResult;`,
 
           const resultStr =
             typeof result === "object"
-              ? JSON.stringify(result).substring(0, 100)
+              ? JSON.stringify(result)
               : String(result);
 
           // Update the edge label to reflect returned data
@@ -1663,6 +1701,12 @@ return saveResult;`,
                     className="whitespace-nowrap w-full text-left px-3 py-2 text-indigo-400 hover:bg-indigo-900/30 font-mono text-xs flex items-center gap-2"
                   >
                     <Database className="w-3 h-3" /> Database
+                  </button>
+                  <button
+                    onClick={() => addNode("table")}
+                    className="whitespace-nowrap w-full text-left px-3 py-2 text-pink-400 hover:bg-pink-900/30 font-mono text-xs flex items-center gap-2"
+                  >
+                    <Table className="w-3 h-3" /> Table
                   </button>
                 </div>
               </div>
